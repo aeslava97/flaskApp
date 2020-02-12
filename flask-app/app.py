@@ -21,9 +21,9 @@ app.config['MYSQL_DATABASE_SOCKET'] = None
 mysql = MySQL()
 mysql.init_app(app)
 
-@app.route('/', methods=['GET', 'POST'])
+@app.route('/', methods=['GET', 'POST','PUT'])
 def index():        
-    if request.method == "POST" and request.form['user'] != "" and request.form['password'] != "":
+    if request.method == "PUT" and request.form['user'] != "" and request.form['password'] != "":
         details = request.form
         user = details['user']
         password = details['password']
@@ -42,9 +42,9 @@ def index():
                             "Description  VARCHAR(100))")
         cursor.execute("CREATE TABLE IF NOT EXISTS Transaction ("
                             "idUser VARCHAR(100) NOT NULL ,"
-                            "idProduct INT NOT NULL ,"
                             "FOREIGN KEY (idUser) REFERENCES User(name),"
-                            "FOREIGN KEY (idProduct) REFERENCES Product(id)"
+                            "idProduct INT NOT NULL ,"
+                            "FOREIGN KEY (idProduct) REFERENCES Product(id),"
                             "date  DATETIME)")
         cursor.execute("CREATE TABLE IF NOT EXISTS Cupon ("
                             "idCupon INT NOT NULL AUTO_INCREMENT,"
@@ -53,18 +53,18 @@ def index():
                             "FOREIGN KEY (idUser) REFERENCES User(name),"
                             "valueMoney    FLOAT)")
         cursor.execute("SELECT * from User WHERE  name = "+ user+" AND password = "+ password)
-        data = cursor.fetchall() 
-        print(data)
         conn.commit()
         cursor.close()
-        if not data:
+        data = cursor.fetchall() 
+        if data:
             return redirect('/home')
-       
+        else:
+            return redirect('/')
 
     elif request.method == "POST" and request.form['userR'] != "" and request.form['passwordR'] != "":
-        details = request.form
-        user = details['userR']
-        password = details['passwordR']
+        details1 = request.form
+        user1 = details1['userR']
+        password1 = details1['passwordR']
         conn = mysql.get_db()
         cursor = conn.cursor()
         cursor.execute("CREATE TABLE IF NOT EXISTS User ("
@@ -80,9 +80,9 @@ def index():
                             "Description  VARCHAR(100))")
         cursor.execute("CREATE TABLE IF NOT EXISTS Transaction ("
                             "idUser VARCHAR(100) NOT NULL ,"
-                            "idProduct INT NOT NULL ,"
                             "FOREIGN KEY (idUser) REFERENCES User(name),"
-                            "FOREIGN KEY (idProduct) REFERENCES Product(id)"
+                            "idProduct INT NOT NULL ,"
+                            "FOREIGN KEY (idProduct) REFERENCES Product(id),"
                             "date  DATETIME)")
         cursor.execute("CREATE TABLE IF NOT EXISTS Cupon ("
                             "idCupon INT NOT NULL AUTO_INCREMENT,"
@@ -90,7 +90,7 @@ def index():
                             "idUser    VARCHAR(100) NOT NULL,"
                             "FOREIGN KEY (idUser) REFERENCES User(name),"
                             "valueMoney    FLOAT)")
-        cursor.execute("INSERT INTO User(name, Wallet, password)VALUES ("+user+", 0, "+password+")")
+        cursor.execute("INSERT INTO User(name, Wallet, password)VALUES ("+user1+", 0, "+password1+")")
 
         conn.commit()
         cursor.close()
@@ -100,7 +100,6 @@ def index():
     # return "login and register"
     template = env.get_template('index.html')
     return make_response(template.render())
-
 
 @app.route('/home' , methods=['GET', 'POST'])
 def show_home():
