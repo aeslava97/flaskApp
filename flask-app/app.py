@@ -21,6 +21,8 @@ app.config['MYSQL_DATABASE_SOCKET'] = None
 
 
 
+
+
 mysql = MySQL()
 mysql.init_app(app)
 
@@ -55,7 +57,7 @@ def index():
                             "idUser    VARCHAR(100) NOT NULL,"
                             "FOREIGN KEY (idUser) REFERENCES User(name),"
                             "valueMoney    FLOAT)")
-        cursor.execute("SELECT * from User WHERE  name = "+ user+" AND password = "+ password)
+        cursor.execute("SELECT * from User WHERE  name = "+ str(user)+" AND password = "+ str(password))
         conn.commit()
         cursor.close()
         data = cursor.fetchall() 
@@ -90,15 +92,15 @@ def index():
                             "idProduct INT NOT NULL ,"
                             "FOREIGN KEY (idProduct) REFERENCES Product(id),"
                             "date  DATETIME)")
-        cursor.execute("CREATE TABLE IF NOT EXISTS Cupon ("
+        cursor.execute("CREATE TABLE IF NOT EXISTS CuponExtra ("
                             "idCupon INT NOT NULL ,"
                             "PRIMARY KEY(idCupon),"
                             "idUser    VARCHAR(100) NOT NULL,"
                             "FOREIGN KEY (idUser) REFERENCES User(name),"
-                            "valueMoney    FLOAT)")
+                            "valueMoney     VARCHAR(100) NOT NULL)")
         cursor.execute("INSERT INTO User(name, Wallet, password)VALUES ("+user1+", 0, "+password1+")")
         idRand = randint(1, 1000)
-        # cursor.execute("INSERT INTO Cupon(idCupon, idUser, valueMoney)VALUES ("+idRand+", "+ user1+", "+100.0+")")
+        cursor.execute("INSERT INTO CuponExtra(idCupon, idUser, valueMoney)VALUES ("+str(idRand)+", "+ str(user1)+", "+str(100.0)+")")
         conn.commit()
         cursor.close()
         template = env.get_template('home.html')
@@ -163,4 +165,4 @@ def binary_file():
 
 # The host='0.0.0.0' means the web app will be accessible to any device on the network
 if __name__ == "__main__":
-    app.run(debug=True, host='0.0.0.0', port=5000)
+    app.run(debug=True, host='0.0.0.0')
