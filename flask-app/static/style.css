@@ -1,4 +1,4 @@
-body {
+#body-overrideBS {
     background: white;
     color: brown;
 }
@@ -60,20 +60,14 @@ body {
 
 #foot{
 	background:  #0062cc;
-	position: fixed;
+    position: relative;
   left: 0;
   bottom: 0;
+  
   width: 100%;
   text-align: center;
 }
-#foot1{
-	background:  #0062cc;
-	position: fixed;
-  left: 0;
-  bottom: 0;
-  width: 100%;
-  text-align: center;
-}
+
 #tablita{
 	background:  #0062cc;
 	color: white;
