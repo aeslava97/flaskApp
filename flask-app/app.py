@@ -5,7 +5,8 @@ from jinja2 import Environment, FileSystemLoader
 import subprocess
 from http import cookies
 from random import randint
-
+from products import Products
+from flask.templating import render_template
 
 
 app = Flask(__name__)
@@ -27,7 +28,7 @@ mysql = MySQL()
 mysql.init_app(app)
 
 @app.route('/', methods=['GET', 'POST','PUT'])
-def index():        
+def logins():        
     if request.method == "POST" and ("user" in request.form.keys()) and ("password" in request.form.keys()):
         details = request.form
         user = details['user']
@@ -110,7 +111,7 @@ def index():
         
  
     # return "login and register"
-    template = env.get_template('index.html')
+    template = env.get_template('includes/logins.html')
     return make_response(template.render())
 
 @app.route('/home' , methods=['GET', 'POST'])
@@ -130,8 +131,7 @@ def show_products():
     # cursor.execute("SELECT * FROM MyPhrases")
     # data = cursor.fetchall()
     cursor.close()
-    template = env.get_template('products.html')
-    return make_response(template.render())
+    return render_template('productos.html',products = Products)
 
 @app.route('/history' , methods=['GET', 'POST'])
 def show_history():

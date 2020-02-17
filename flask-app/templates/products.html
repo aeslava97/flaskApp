@@ -8,40 +8,7 @@
 <script src="//cdnjs.cloudflare.com/ajax/libs/jquery/3.2.1/jquery.min.js"></script>
   </head>
 <body>
-
-
-   <nav class="navbar navbar-expand-lg navbar-dark  fixed-top" id = "navi">
-    <div class="container">
-      <a class="navbar-brand" href="#">E-Commerce</a>
-      <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarResponsive" aria-controls="navbarResponsive" aria-expanded="false" aria-label="Toggle navigation">
-        <span class="navbar-toggler-icon"></span>
-      </button>
-      <div class="collapse navbar-collapse" id="navbarResponsive">
-        <ul class="navbar-nav ml-auto">
-          <li class="nav-item active">
-            <a class="nav-link" href="/home">Home
-              <span class="sr-only">(current)</span>
-            </a>
-          </li>
-          <li class="nav-item">
-            <a class="nav-link" href="/products">Products</a>
-          </li>
-          <li class="nav-item">
-            <a class="nav-link" href="/history">Purchase History</a>
-          </li>
-          <li class="nav-item">
-            <a class="nav-link" href="#">Contact</a>
-          </li>
-           <li class="nav-item">
-            <a class="nav-link" href="#">Logout</a>
-          </li>
-        </ul>
-      </div>
-    </div>
-  </nav>
-
-
-
+  {%include 'includes/navbar.html'%}
 
     <h1 class= "text-center titulo" >Products</h1>
     <br>
@@ -159,13 +126,9 @@
 
 
 
-  <!-- Footer -->
-  <footer class="py-5 " id="foot">
-    <div class="container">
-      <p class="m-0 text-center text-white">Copyright &copy; Los Poporros 2020</p>
-    </div>
-    <!-- /.container -->
-  </footer>
+
 
 </body>
+  <!-- Footer -->
+  {% include 'includes/footer.html' %}
 </html>
