@@ -3,6 +3,9 @@ from flask import Flask, request, redirect, url_for, Markup, make_response
 from flaskext.mysql import MySQL
 from jinja2 import Environment, FileSystemLoader
 import subprocess
+from http import cookies
+from random import randint
+
 
 
 app = Flask(__name__)
@@ -23,7 +26,7 @@ mysql.init_app(app)
 
 @app.route('/', methods=['GET', 'POST','PUT'])
 def index():        
-    if request.method == "PUT" and request.form['user'] != "" and request.form['password'] != "":
+    if request.method == "POST" and ("user" in request.form.keys()) and ("password" in request.form.keys()):
         details = request.form
         user = details['user']
         password = details['password']
@@ -57,7 +60,10 @@ def index():
         cursor.close()
         data = cursor.fetchall() 
         if data:
-            return redirect('/home')
+            template = env.get_template('home.html')
+            resp = make_response(template.render())
+            resp.set_cookie('user', user)
+            return resp
         else:
             return redirect('/')
 
@@ -85,16 +91,20 @@ def index():
                             "FOREIGN KEY (idProduct) REFERENCES Product(id),"
                             "date  DATETIME)")
         cursor.execute("CREATE TABLE IF NOT EXISTS Cupon ("
-                            "idCupon INT NOT NULL AUTO_INCREMENT,"
+                            "idCupon INT NOT NULL ,"
                             "PRIMARY KEY(idCupon),"
                             "idUser    VARCHAR(100) NOT NULL,"
                             "FOREIGN KEY (idUser) REFERENCES User(name),"
                             "valueMoney    FLOAT)")
         cursor.execute("INSERT INTO User(name, Wallet, password)VALUES ("+user1+", 0, "+password1+")")
-
+        idRand = randint(1, 1000)
+        # cursor.execute("INSERT INTO Cupon(idCupon, idUser, valueMoney)VALUES ("+idRand+", "+ user1+", "+100.0+")")
         conn.commit()
         cursor.close()
-        return redirect('/home')
+        template = env.get_template('home.html')
+        resp = make_response(template.render())
+        resp.set_cookie('user', user1)
+        return resp
         
  
     # return "login and register"
