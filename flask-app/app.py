@@ -111,7 +111,7 @@ def logins():
         
  
     # return "login and register"
-    template = env.get_template('includes/logins.html')
+    template = env.get_template('logins.html')
     return make_response(template.render())
 
 @app.route('/home' , methods=['GET', 'POST'])
@@ -131,7 +131,7 @@ def show_products():
     # cursor.execute("SELECT * FROM MyPhrases")
     # data = cursor.fetchall()
     cursor.close()
-    return render_template('productos.html',products = Products)
+    return render_template('products.html',products = Products)
 
 @app.route('/history' , methods=['GET', 'POST'])
 def show_history():

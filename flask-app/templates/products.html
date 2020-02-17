@@ -1,20 +1,11 @@
-<html>
- <head>
-    <meta charset="UTF-8" />
-    <title>Flask template</title>
-    <link rel='stylesheet' href='/static/style.css' />
-    <link href="//maxcdn.bootstrapcdn.com/bootstrap/4.1.1/css/bootstrap.min.css" rel="stylesheet" id="bootstrap-css">
-<script src="//maxcdn.bootstrapcdn.com/bootstrap/4.1.1/js/bootstrap.min.js"></script>
-<script src="//cdnjs.cloudflare.com/ajax/libs/jquery/3.2.1/jquery.min.js"></script>
-  </head>
-<body>
-  {%include 'includes/navbar.html'%}
+{% extends 'index.html' %}
+<!-- Navbar -->
+{%include 'includes/navbar.html'%}
 
-    <h1 class= "text-center titulo" >Products</h1>
+{% block body %}
+<h1 class= "text-center titulo" >Products</h1>
     <br>
-
   <br>
-
         <div class="row">
 
           <div class="col-lg-4 col-md-6 mb-4">
@@ -32,7 +23,6 @@
               </div>
             </div>
           </div>
-
           <div class="col-lg-4 col-md-6 mb-4">
             <div class="card h-100">
               <a href="#"><img class="card-img-top" src="http://placehold.it/700x400" alt=""></a>
@@ -48,7 +38,6 @@
               </div>
             </div>
           </div>
-
           <div class="col-lg-4 col-md-6 mb-4">
             <div class="card h-100">
               <a href="#"><img class="card-img-top" src="http://placehold.it/700x400" alt=""></a>
@@ -64,7 +53,6 @@
               </div>
             </div>
           </div>
-
           <div class="col-lg-4 col-md-6 mb-4">
             <div class="card h-100">
               <a href="#"><img class="card-img-top" src="http://placehold.it/700x400" alt=""></a>
@@ -80,7 +68,6 @@
               </div>
             </div>
           </div>
-
           <div class="col-lg-4 col-md-6 mb-4">
             <div class="card h-100">
               <a href="#"><img class="card-img-top" src="http://placehold.it/700x400" alt=""></a>
@@ -96,7 +83,6 @@
               </div>
             </div>
           </div>
-
           <div class="col-lg-4 col-md-6 mb-4">
             <div class="card h-100">
               <a href="#"><img class="card-img-top" src="http://placehold.it/700x400" alt=""></a>
@@ -123,12 +109,5 @@
     <!-- /.row -->
 
   </div>
+{% endblock %}
 
-
-
-
-
-</body>
-  <!-- Footer -->
-  {% include 'includes/footer.html' %}
-</html>
