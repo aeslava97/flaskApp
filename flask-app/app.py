@@ -130,8 +130,9 @@ def show_products():
     cursor = conn.cursor()
     # cursor.execute("SELECT * FROM MyPhrases")
     # data = cursor.fetchall()
+    data = Products(cursor)
     cursor.close()
-    return render_template('products.html',products = Products)
+    return render_template('products.html',products = data)
 
 @app.route('/history' , methods=['GET', 'POST'])
 def show_history():
