@@ -3,9 +3,27 @@
 {%include 'includes/navbar.html'%}
 
 {% block body %}
-  <h1>Products</h1>
-    {% for product in products %}
-      {{product.name}}
-    {% endfor %}
+<h1 class= "text-center titulo" >Products</h1>
+
+<div class="row">
+  {% for product in products %}
+  <div class="col-lg-4 col-md-6 mb-4">
+    <div class="card h-100">
+      <a href="#"><img class="card-img-top" src="{{product[4]}}" alt=""></a>
+      <div class="card-body">
+        <h4 class="card-title">
+          <a href="#">{{product[1]}}</a>
+        </h4>
+        <h5>$ {{product[2]}}</h5>
+        <p class="card-text">{{product[3]}}</p>
+      </div>
+      <div class="card-footer">
+        <small class="text-muted">&#9733; &#9733; &#9733; &#9733; &#9734;</small>
+      </div>
+    </div>
+  </div>
+  {% endfor %}
+</div>
+    
 {% endblock %}
 

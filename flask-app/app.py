@@ -1,5 +1,5 @@
 #!/usr/bin/env/python3.6
-from flask import Flask, request, redirect, url_for, Markup, make_response 
+from flask import Flask, request, redirect, url_for, Markup, make_response, jsonify
 from flaskext.mysql import MySQL
 from jinja2 import Environment, FileSystemLoader
 import subprocess
@@ -86,7 +86,8 @@ def logins():
                             "PRIMARY KEY(id),"
                             "name    VARCHAR(100),"
                             "value    FLOAT,"
-                            "Description  VARCHAR(100))")
+                            "Description  VARCHAR(100),"
+                            "img    VARCHAR(100))")
         cursor.execute("CREATE TABLE IF NOT EXISTS Transaction ("
                             "idUser VARCHAR(100) NOT NULL ,"
                             "FOREIGN KEY (idUser) REFERENCES User(name),"
