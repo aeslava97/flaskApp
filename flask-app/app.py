@@ -1,5 +1,5 @@
 #!/usr/bin/env/python3.6
-from flask import Flask, request, redirect, url_for, Markup, make_response, jsonify
+from flask import Flask, request, redirect, url_for, Markup, make_response
 from flaskext.mysql import MySQL
 from jinja2 import Environment, FileSystemLoader
 import subprocess
