@@ -45,7 +45,8 @@ def logins():
                             "PRIMARY KEY(id),"
                             "name    VARCHAR(100),"
                             "value    FLOAT,"
-                            "Description  VARCHAR(100))")
+                            "Description  VARCHAR(100),"
+                            "img    VARCHAR(100))")
         cursor.execute("CREATE TABLE IF NOT EXISTS Transaction ("
                             "idUser VARCHAR(100) NOT NULL ,"
                             "FOREIGN KEY (idUser) REFERENCES User(name),"
