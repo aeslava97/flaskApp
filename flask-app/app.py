@@ -1,5 +1,5 @@
 #!/usr/bin/env/python3.6
-from flask import Flask, request, redirect, url_for, Markup, make_response
+from flask import Flask, request, redirect, url_for, Markup, make_response, flash
 from flaskext.mysql import MySQL
 from jinja2 import Environment, FileSystemLoader
 import subprocess
@@ -10,6 +10,7 @@ from flask.templating import render_template
 
 
 app = Flask(__name__)
+app.secret_key = "super secret key"
 loader = FileSystemLoader( searchpath="templates/" )
 env = Environment(loader=loader)
 
@@ -39,7 +40,8 @@ def logins():
                             "name VARCHAR(100) NOT NULl,"
                             "PRIMARY KEY(name),"
                             "Wallet FLOAT,"
-                            "password  VARCHAR(100))")
+                            "password  VARCHAR(100),"
+                            "Wallet FLOAT)")
         cursor.execute("CREATE TABLE IF NOT EXISTS Product ("
                             "id INT NOT NULL AUTO_INCREMENT,"
                             "PRIMARY KEY(id),"
@@ -81,7 +83,8 @@ def logins():
                             "name VARCHAR(100) NOT NULl,"
                             "PRIMARY KEY(name),"
                             "Wallet FLOAT,"
-                            "password  VARCHAR(100))")
+                            "password  VARCHAR(100),"
+                            "Wallet FLOAT)")
         cursor.execute("CREATE TABLE IF NOT EXISTS Product ("
                             "id INT NOT NULL AUTO_INCREMENT,"
                             "PRIMARY KEY(id),"
@@ -127,7 +130,7 @@ def show_home():
     return make_response(template.render())
 
 @app.route('/products' , methods=['GET', 'POST'])
-def show_products():
+def products():
     conn = mysql.connect()
     cursor = conn.cursor()
     # cursor.execute("SELECT * FROM MyPhrases")
@@ -135,6 +138,12 @@ def show_products():
     data = Products(cursor)
     cursor.close()
     return render_template('products.html',products = data)
+
+@app.route('/products/buying', methods=['GET', 'POST'])
+def buying():
+
+    flash('the buy was succesful!')
+    return redirect(url_for('products'))          
 
 @app.route('/history' , methods=['GET', 'POST'])
 def show_history():

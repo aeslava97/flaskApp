@@ -3,7 +3,19 @@
 {%include 'includes/navbar.html'%}
 
 {% block body %}
+
+
 <h1 class= "text-center titulo" >Products</h1>
+
+{% with messages = get_flashed_messages() %}
+  {% if messages %}
+    <ul class=flashes>
+    {% for message in messages %}
+      <li>{{ message }}</li>
+    {% endfor %}
+    </ul>
+  {% endif %}
+{% endwith %}
 
 <div class="row">
   {% for product in products %}
@@ -18,7 +30,9 @@
         <p class="card-text">{{product[3]}}</p>
       </div>
       <div class="card-footer">
-        <button type="button" class="btn btn-danger">Buy!</button>
+        <form action="/buying" method="post">
+          <a class="btn btn-danger" href="/products/buying"> Buy! </a>
+        </form>
       </div>
     </div>
   </div>
