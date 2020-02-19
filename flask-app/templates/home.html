@@ -23,12 +23,14 @@
 </form>
     </div>
     <div class="col-lg-9">
+
 <div class="container">
           <div class="card">
+              {% for prof in profile %}
               <div class="card-body">
                   <div class="row">
                       <div class="  ">
-                          <h3 class="text-center">Welcome back, Mike Anamendolla</h3>
+                          <h3 class="text-center">Welcome back, {{prof[0]}}</h3>
                           <img src="https://robohash.org/68.186.255.198.png" alt="profile-picture" class=" rounded mx-auto d-block rounded-circle " id = "circ">
                           <h4 class="text-center">Web / UI Designer</h4>
                           <p class="text-center">
@@ -36,15 +38,15 @@
                           </p>
                       </div>
                       <div class="col-12 col-lg-4">
-                          <h3 class="mb-0">20.7$</h3>
+                          <h3 class="mb-0">${{prof[1]}}</h3>
                           <small>Wallet</small>
                       </div>
                       <div class="col-12 col-lg-4">
-                          <h3 class="mb-0">245</h3>
-                          <small>Purchases</small>
+                          <h3 class="mb-0">{{(prof[3]/100+1)|round|int}}</h3>
+                          <small>Level</small>
                       </div>
                       <div class="col-12 col-lg-4">
-                          <h3 class="mb-0">43$</h3>
+                          <h3 class="mb-0">${{prof[3]}}</h3>
                           <small>Money spent</small>
                       </div>
                       <!--/col-->
@@ -52,6 +54,7 @@
                   <!--/row-->
               </div>
               <!--/card-block-->
+              {% endfor %}
           </div>
 </div>
 </div>

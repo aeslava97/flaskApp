@@ -132,9 +132,9 @@ def show_home():
     cursor = conn.cursor()
     # cursor.execute("SELECT * FROM MyPhrases")
     # data = cursor.fetchall()
+    data = getUser(cursor,request.cookies['user'])
     cursor.close()
-    template = env.get_template('home.html')
-    return make_response(template.render())
+    return render_template('home.html',profile = data)
 
 @app.route('/products' , methods=['GET', 'POST'])
 def products():
@@ -170,9 +170,6 @@ def show_history():
     # cursor.execute("SELECT * FROM MyPhrases")
     # data = cursor.fetchall()
     data = getHistory(cursor, user)
-    flash("-----------------bool(data)-----------------")
-    flash(data)
-    flash("-----------------bool(data)-----------------")
     cursor.close()
     return render_template('history.html',histories = data)          
 
