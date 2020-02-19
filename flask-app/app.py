@@ -5,7 +5,8 @@ from jinja2 import Environment, FileSystemLoader
 import subprocess
 from http import cookies
 from random import randint
-from products import Products, BuyProducts
+from products import Products, BuyProducts, getProduct
+from users import getUser
 from flask.templating import render_template
 
 
@@ -109,7 +110,7 @@ def logins():
                             "idUser    VARCHAR(100) NOT NULL,"
                             "FOREIGN KEY (idUser) REFERENCES User(name),"
                             "valueMoney     VARCHAR(100) NOT NULL)")
-        cursor.execute("INSERT INTO User(name, Wallet, password)VALUES ("+user1+", 0, "+password1+")")
+        cursor.execute("INSERT INTO User(name, Wallet, password, wasted)VALUES ("+user1+", 0, "+password1+", 0)")
         idRand = randint(1, 1000)
         cursor.execute("INSERT INTO CuponExtra(idCupon, idUser, valueMoney)VALUES ("+str(idRand)+", "+ str(user1)+", "+str(100.0)+")")
         conn.commit()
@@ -146,13 +147,20 @@ def products():
 
 @app.route('/products/buying/<id>', methods=['POST'])
 def buying(id):
+    user = request.cookies['user']
     conn = mysql.connect()
     cursor = conn.cursor()
     #flash(request.cookies['user'])
-    BuyProducts(cursor, request.cookies['user'], id)
-    conn.commit()
-    cursor.close()
-    return ('', 204)        
+    productData = getProduct(cursor,id)[0]
+    userData  = getUser(cursor,user)[0]
+    wallet = userData[1]
+    value = productData[2]
+    if wallet >= value:
+        BuyProducts(cursor, user, id, wallet, value)
+        conn.commit()
+        cursor.close()
+        return ('', 204)
+    return render_template('products.html')
 
 @app.route('/history' , methods=['GET', 'POST'])
 def show_history():
