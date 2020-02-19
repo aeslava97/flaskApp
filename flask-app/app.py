@@ -7,6 +7,7 @@ from http import cookies
 from random import randint
 from products import Products, BuyProducts, getProduct
 from users import getUser
+from history import getHistory
 from flask.templating import render_template
 
 
@@ -161,15 +162,19 @@ def buying(id):
         cursor.close()
         return ('', 204)
     abort(409)
-@app.route('/history' , methods=['GET', 'POST'])
+@app.route('/history' , methods=['GET'])
 def show_history():
+    user = request.cookies['user']
     conn = mysql.connect()
     cursor = conn.cursor()
     # cursor.execute("SELECT * FROM MyPhrases")
     # data = cursor.fetchall()
+    data = getHistory(cursor, user)
+    flash("-----------------bool(data)-----------------")
+    flash(data)
+    flash("-----------------bool(data)-----------------")
     cursor.close()
-    template = env.get_template('history.html')
-    return make_response(template.render())            
+    return render_template('history.html',histories = data)          
 
 
 @app.route('/hello/<name>')

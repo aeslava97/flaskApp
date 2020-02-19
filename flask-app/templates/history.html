@@ -2,71 +2,37 @@
 <!-- Navbar -->
 {%include 'includes/navbar.html'%}
 
+
+
+
 {% block body %}
-   <nav class="navbar navbar-expand-lg navbar-dark  fixed-top" id = "navi">
-    <div class="container">
-      <a class="navbar-brand" href="#">E-Commerce</a>
-      <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarResponsive" aria-controls="navbarResponsive" aria-expanded="false" aria-label="Toggle navigation">
-        <span class="navbar-toggler-icon"></span>
-      </button>
-      <div class="collapse navbar-collapse" id="navbarResponsive">
-        <ul class="navbar-nav ml-auto">
-          <li class="nav-item active">
-            <a class="nav-link" href="/home">Home
-              <span class="sr-only">(current)</span>
-            </a>
-          </li>
-          <li class="nav-item">
-            <a class="nav-link" href="/products">Products</a>
-          </li>
-          <li class="nav-item">
-            <a class="nav-link" href="/history">Purchase History</a>
-          </li>
-          <li class="nav-item">
-            <a class="nav-link" href="#">Contact</a>
-          </li>
-           <li class="nav-item">
-            <a class="nav-link" href="#">Logout</a>
-          </li>
-        </ul>
-      </div>
-    </div>
-  </nav>
-
-
 
 
     <h1 class= "text-center titulo" >History of purchase</h1>
     <br>
 
+  
+    
+  
   <table class="table" >
+  
   <thead id="tablita">
     <tr>
       <th scope="col">#</th>
-      <th scope="col">First</th>
-      <th scope="col">Last</th>
-      <th scope="col">Handle</th>
+      <th scope="col">Name</th>
+      <th scope="col">ProductId</th>
+      <th scope="col">DateTime</th>
     </tr>
   </thead>
   <tbody>
+    {% for histo in histories %}
     <tr>
-      <th scope="row">1</th>
-      <td>Mark</td>
-      <td>Otto</td>
-      <td>@mdo</td>
+      <th scope="row">{{loop.index}}</th>
+      <td>{{histo[0]}}</td>
+      <td>{{histo[1]}}</td>
+      <td>@{{histo[2]}}</td>
     </tr>
-    <tr>
-      <th scope="row">2</th>
-      <td>Jacob</td>
-      <td>Thornton</td>
-      <td>@fat</td>
-    </tr>
-    <tr>
-      <th scope="row">3</th>
-      <td>Larry</td>
-      <td>the Bird</td>
-      <td>@twitter</td>
-    </tr>
+    {% endfor %} 
   </tbody>
 </table>
 {% endblock %}
