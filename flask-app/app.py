@@ -5,7 +5,7 @@ from jinja2 import Environment, FileSystemLoader
 import subprocess
 from http import cookies
 from random import randint
-from products import Products
+from products import Products, BuyProducts
 from flask.templating import render_template
 
 
@@ -27,12 +27,16 @@ app.config['MYSQL_DATABASE_SOCKET'] = None
 
 mysql = MySQL()
 mysql.init_app(app)
-
+usuarioActual = "hola"
+print("------------usuarioActual-------------")
+print(usuarioActual)
+print("------------usuarioActual-------------")
 @app.route('/', methods=['GET', 'POST','PUT'])
 def logins():        
     if request.method == "POST" and ("user" in request.form.keys()) and ("password" in request.form.keys()):
         details = request.form
         user = details['user']
+        usuarioActual = user
         password = details['password']
         conn = mysql.get_db()
         cursor = conn.cursor()
@@ -76,6 +80,7 @@ def logins():
     elif request.method == "POST" and request.form['userR'] != "" and request.form['passwordR'] != "":
         details1 = request.form
         user1 = details1['userR']
+        usuarioActual = user1
         password1 = details1['passwordR']
         conn = mysql.get_db()
         cursor = conn.cursor()
@@ -114,7 +119,7 @@ def logins():
         resp.set_cookie('user', user1)
         return resp
         
- 
+    
     # return "login and register"
     template = env.get_template('logins.html')
     return make_response(template.render())
@@ -139,11 +144,15 @@ def products():
     cursor.close()
     return render_template('products.html',products = data)
 
-@app.route('/products/buying', methods=['GET', 'POST'])
-def buying():
-
-    flash('the buy was succesful!')
-    return redirect(url_for('products'))          
+@app.route('/products/buying/<id>', methods=['POST'])
+def buying(id):
+    conn = mysql.connect()
+    cursor = conn.cursor()
+    #flash(request.cookies['user'])
+    BuyProducts(cursor, request.cookies['user'], id)
+    conn.commit()
+    cursor.close()
+    return ('', 204)        
 
 @app.route('/history' , methods=['GET', 'POST'])
 def show_history():

@@ -24,4 +24,6 @@ services:
     ports:
     - "3307:3306"
     volumes:
-     - ./mysql_data:/var/lib/mysql #hot reloading    
+     - ./mysql_data:/var/lib/mysql #hot reloading
+    cap_add:
+      - SYS_NICE  # CAP_SYS_NICE  

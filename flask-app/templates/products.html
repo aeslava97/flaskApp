@@ -30,8 +30,8 @@
         <p class="card-text">{{product[3]}}</p>
       </div>
       <div class="card-footer">
-        <form action="/buying" method="post">
-          <a class="btn btn-danger" href="/products/buying"> Buy! </a>
+        <form action="products/buying/{{product[0]}}" method="POST">
+          <input type="submit" class="btn btn-danger" value="Buy!"></input>
         </form>
       </div>
     </div>
