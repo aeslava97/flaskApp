@@ -1,5 +1,5 @@
 #!/usr/bin/env/python3.6
-from flask import Flask, request, redirect, url_for, Markup, make_response, flash
+from flask import Flask, request, redirect, url_for, Markup, make_response, flash, abort
 from flaskext.mysql import MySQL
 from jinja2 import Environment, FileSystemLoader
 import subprocess
@@ -160,8 +160,7 @@ def buying(id):
         conn.commit()
         cursor.close()
         return ('', 204)
-    return render_template('products.html')
-
+    abort(409)
 @app.route('/history' , methods=['GET', 'POST'])
 def show_history():
     conn = mysql.connect()
@@ -191,6 +190,11 @@ def binary_file():
     popen.wait()
     output = popen.stdout.read()
     return output
+
+@app.errorhandler(409)
+def payme(e):
+    return render_template('error409.html')
+
 
 # The host='0.0.0.0' means the web app will be accessible to any device on the network
 if __name__ == "__main__":
