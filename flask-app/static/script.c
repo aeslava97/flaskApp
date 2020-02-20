@@ -41,19 +41,20 @@ int main(int argc, char *argv[]) {
    
     while ((row = mysql_fetch_row(res)) != NULL)
     {
-
+printf("%s",row[0]);
        
    int res =strcmp(row[0], argv[1]);
        if(res == 0 )
-       {
+       {  
+
           printf("%s",row[1]);
-          return 1;
+          return 0;
        }  
        
     }
     
          printf("%d",0);
-          return 0;
+          return 1;
 
          
 
