@@ -138,7 +138,12 @@ def logins():
             idRand = randint(1, 1000)
             sql3 = "INSERT INTO CuponExtra(idCupon, idUser, valueMoney)VALUES (%s, %s, %s)"
             val3 = (str(idRand), user1, 100)
+            
             cursor.execute(sql3, val3)
+            sql4 = "INSERT INTO CuponValido(idCupon,activo)VALUES (%s,%s)"
+            val4 = (str(idRand),1)
+            cursor.execute(sql4, val4)
+            
             conn.commit()
             cursor.close()
             resp = make_response(redirect('/home'))
@@ -200,16 +205,98 @@ def hello(name):
 
 @app.route('/bin', methods=['GET', 'POST'])
 def binary_file():
-    if request.method == "POST":        
-        args = ("gcc","static/script.c", "-o","static/binary_file")
+    
+    ###jummm falta ponerlas dinamicas
+    idCuponNuevo="118"
+    saldoSolicitado="20"
+    mensajeTransaccion='Accion no valida'
+    
+    if request.method == "POST":   
+        details = request.form  
+        cuponId2=details['cupon']     
+        args = ("gcc","-o","static/binario $(mysql_config --cflags) static/script.c $(mysql_config --libs)")
         popen = subprocess.Popen(args, stdout=subprocess.PIPE)
         popen.wait()
-
-    args = ("static/binary_file")
+        
+    
+    args = ("static/binario",idCuponNuevo)
     popen = subprocess.Popen(args, stdout=subprocess.PIPE)
     popen.wait()
     output = popen.stdout.read()
-    return output
+    
+    outputnuevo=output.decode(encoding='utf-8', errors='strict')
+   #Si es 1 el cupon es valido si es 0 no es valido
+    if(int(outputnuevo)==1):
+        
+        conn = mysql.connect()
+        cursor = conn.cursor()
+        
+        sql= "SELECT  valueMoney FROM  CuponExtra WHERE idCupon = %s "
+        valoresCupon=(int(idCuponNuevo))
+        cursor.execute(sql,valoresCupon)
+        data = cursor.fetchone()
+        
+        #Dinero bono
+        saldoDisponible= int(str(data[0]))
+        #Modifico el saldo de acuerdo a la  cantidad solicitada
+        if(int(saldoSolicitado)<=saldoDisponible):
+            
+            #Actualizo el nuevo saldo del cupon disponible en en la base de datos
+            saldoNuevo=saldoDisponible-int(saldoSolicitado)
+            sqlActualizacionSaldo = "UPDATE CuponExtra SET valueMoney = %s WHERE idCupon = %s "
+            valoresActualizacion = (saldoNuevo, int(idCuponNuevo))
+            cursor.execute(sqlActualizacionSaldo, valoresActualizacion)
+            
+            #Actualizo saldo usuario agrego dinero a su wallet
+            dataUsuarioActual = getUser(cursor,request.cookies['user'])
+            
+            #Busco el wallet del usuario actual
+            sqlWalletActual= "SELECT  Wallet FROM  User WHERE +" "name= %s "
+            usuarioActual = (str(dataUsuarioActual[0][0]))
+            cursor.execute(sqlWalletActual,usuarioActual)
+            dataWalletActual = cursor.fetchone()
+            
+            #Nuevo saldo Wallet total
+            saldoNuevoTotal= (dataWalletActual[0])+ float(saldoSolicitado)
+    
+            #Actualizo perfil de usuario
+            sqlActualizacionWallet = "UPDATE User SET Wallet = %s WHERE "+ "name = %s "
+            valoresActualizacionUsuario = (str(saldoNuevoTotal),str(dataUsuarioActual[0][0]))
+            cursor.execute(sqlActualizacionWallet, valoresActualizacionUsuario)
+            mensajeTransaccion='Fondos añadidos con exito !!!'
+            conn.commit()
+            conn.close() 
+            connectionPerfil = mysql.connect()
+            connection = mysql.connect()
+            cursor = connection.cursor()
+            data = getUser(cursor,request.cookies['user'])
+            dataCupon = getCupon(cursor,request.cookies['user'])
+            cursor.close() 
+            return render_template('home.html',profile = data, cupons = dataCupon, mensajePositivo=mensajeTransaccion)    
+         #Desactivo cupon si no tiene fondos   
+        if saldoDisponible==0:
+            mensajeTransaccion="Agotaste el saldo de su cupon a partir de ahora no se encuentra activo"
+            sqlDesactivoCupon = "UPDATE CuponValido SET activo = %s WHERE idCupon = %s "
+            valoresDeCupoAdesactivar=(0,int(idCuponNuevo))
+            cursor.execute(sqlDesactivoCupon, valoresDeCupoAdesactivar)
+            conn.commit()
+            conn.close()
+            connectionPerfil = mysql.connect()
+            connection = mysql.connect()
+            cursor = connection.cursor()
+            data = getUser(cursor,request.cookies['user'])
+            dataCupon = getCupon(cursor,request.cookies['user'])
+            cursor.close() 
+            return render_template('home.html',profile = data, cupons = dataCupon, mensaje=mensajeTransaccion)
+            
+        
+    connectionPerfil = mysql.connect()
+    connection = mysql.connect()
+    cursor = connection.cursor()
+    data = getUser(cursor,request.cookies['user'])
+    dataCupon = getCupon(cursor,request.cookies['user'])
+    cursor.close()
+    return render_template('home.html',profile = data, cupons = dataCupon, mensaje=mensajeTransaccion)
 
 @app.errorhandler(409)
 def payme(e):
