@@ -1,4 +1,13 @@
 def getUser(cursor, idUser):
-    cursor.execute("SELECT * FROM User WHERE NAME = {}".format(idUser))
-    data = cursor.fetchall()
-    return data
+	sql = "SELECT * FROM User WHERE name = %s"
+	val = (idUser)
+	cursor.execute(sql, val)
+	data = cursor.fetchall()
+	return data
+
+def getCupon(cursor, idUser):
+	sql = "SELECT * FROM CuponExtra WHERE idUser = %s"
+	val = (idUser)
+	cursor.execute(sql, val)
+	data = cursor.fetchall()
+	return data

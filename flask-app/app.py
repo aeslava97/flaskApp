@@ -7,6 +7,7 @@ from http import cookies
 from random import randint
 from products import Products, BuyProducts, getProduct
 from users import getUser
+from users import getCupon
 from history import getHistory
 from flask.templating import render_template
 
@@ -67,13 +68,20 @@ def logins():
                             "idUser    VARCHAR(100) NOT NULL,"
                             "FOREIGN KEY (idUser) REFERENCES User(name),"
                             "valueMoney    FLOAT)")
-        cursor.execute("SELECT * from User WHERE  name = "+ str(user)+" AND password = "+ str(password))
+        # cont = 6
+        # while cont != 0:
+        #     sql4 = "INSERT INTO Product(id, name, value, Description , img) VALUES (%s, %s, %s, %s, %s)"
+        #     val4 = (cont, "Producto"+ str(cont), 50+ cont, "Un muy buen producto", "https://cdn2.iconfinder.com/data/icons/e-commerce-line-4-1/1024/open_box4-512.png")
+        #     cursor.execute(sql4, val4)
+        #     cont = cont - 1
+        sql2 = "SELECT * from User WHERE  name = %s AND password = %s"
+        val2 = (user, password)
+        cursor.execute(sql2, val2)
         conn.commit()
         cursor.close()
         data = cursor.fetchall() 
         if data:
-            template = env.get_template('home.html')
-            resp = make_response(template.render())
+            resp = make_response(redirect('/home'))
             resp.set_cookie('user', user)
             return resp
         else:
@@ -91,7 +99,7 @@ def logins():
                             "PRIMARY KEY(name),"
                             "Wallet FLOAT,"
                             "password  VARCHAR(100),"
-                            "Wallet FLOAT)")
+                            "wasted FLOAT)")
         cursor.execute("CREATE TABLE IF NOT EXISTS Product ("
                             "id INT NOT NULL AUTO_INCREMENT,"
                             "PRIMARY KEY(id),"
@@ -111,17 +119,32 @@ def logins():
                             "idUser    VARCHAR(100) NOT NULL,"
                             "FOREIGN KEY (idUser) REFERENCES User(name),"
                             "valueMoney     VARCHAR(100) NOT NULL)")
-        cursor.execute("INSERT INTO User(name, Wallet, password, wasted)VALUES ("+user1+", 0, "+password1+", 0)")
-        idRand = randint(1, 1000)
-        cursor.execute("INSERT INTO CuponExtra(idCupon, idUser, valueMoney)VALUES ("+str(idRand)+", "+ str(user1)+", "+str(100.0)+")")
         conn.commit()
         cursor.close()
-        template = env.get_template('home.html')
-        resp = make_response(template.render())
-        resp.set_cookie('user', user1)
-        return resp
-        
-    
+        cursor = conn.cursor()
+        sql1 = "SELECT * from User WHERE  name = %s AND password = %s"
+        val1 = (user1, password1)
+        cursor.execute(sql1, val1)
+        conn.commit()
+        cursor.close()
+        data11 = cursor.fetchall() 
+        if data11:
+            return redirect('/')
+        else:
+            cursor = conn.cursor()
+            sql = "INSERT INTO User(name, Wallet, password, wasted) VALUES (%s, %s, %s, %s)"
+            val = (user1, 0, password1, 0)
+            cursor.execute(sql, val)
+            idRand = randint(1, 1000)
+            sql3 = "INSERT INTO CuponExtra(idCupon, idUser, valueMoney)VALUES (%s, %s, %s)"
+            val3 = (str(idRand), user1, 100)
+            cursor.execute(sql3, val3)
+            conn.commit()
+            cursor.close()
+            resp = make_response(redirect('/home'))
+            resp.set_cookie('user', user1)
+            return resp
+            
     # return "login and register"
     template = env.get_template('logins.html')
     return make_response(template.render())
@@ -130,18 +153,15 @@ def logins():
 def show_home():
     conn = mysql.connect()
     cursor = conn.cursor()
-    # cursor.execute("SELECT * FROM MyPhrases")
-    # data = cursor.fetchall()
     data = getUser(cursor,request.cookies['user'])
+    data1 = getCupon(cursor,request.cookies['user'])
     cursor.close()
-    return render_template('home.html',profile = data)
+    return render_template('home.html',profile = data, cupons = data1)
 
 @app.route('/products' , methods=['GET', 'POST'])
 def products():
     conn = mysql.connect()
     cursor = conn.cursor()
-    # cursor.execute("SELECT * FROM MyPhrases")
-    # data = cursor.fetchall()
     data = Products(cursor)
     cursor.close()
     return render_template('products.html',products = data)
@@ -151,7 +171,6 @@ def buying(id):
     user = request.cookies['user']
     conn = mysql.connect()
     cursor = conn.cursor()
-    #flash(request.cookies['user'])
     productData = getProduct(cursor,id)[0]
     userData  = getUser(cursor,user)[0]
     wallet = userData[1]
@@ -162,13 +181,12 @@ def buying(id):
         cursor.close()
         return ('', 204)
     abort(409)
+
 @app.route('/history' , methods=['GET'])
 def show_history():
     user = request.cookies['user']
     conn = mysql.connect()
     cursor = conn.cursor()
-    # cursor.execute("SELECT * FROM MyPhrases")
-    # data = cursor.fetchall()
     data = getHistory(cursor, user)
     cursor.close()
     return render_template('history.html',histories = data)          

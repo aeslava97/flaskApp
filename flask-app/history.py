@@ -1,4 +1,6 @@
 def getHistory(cursor, idUser):
-    cursor.execute("SELECT * FROM Transaction WHERE idUser = {}".format(idUser))
-    data = cursor.fetchall()
-    return data
+	sql = "SELECT * FROM Transaction WHERE idUser = %s"
+	val = (idUser)
+	cursor.execute(sql, val)
+	data = cursor.fetchall()
+	return data

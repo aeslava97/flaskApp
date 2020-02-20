@@ -37,17 +37,24 @@
                               I love to read, hang out with friends, watch football, listen to music, and learn new things.
                           </p>
                       </div>
-                      <div class="col-12 col-lg-4">
+                      <div class="col-12 col-lg-3">
                           <h3 class="mb-0">${{prof[1]}}</h3>
                           <small>Wallet</small>
                       </div>
-                      <div class="col-12 col-lg-4">
+                      <div class="col-12 col-lg-3">
                           <h3 class="mb-0">{{(prof[3]/100+1)|round|int}}</h3>
                           <small>Level</small>
                       </div>
-                      <div class="col-12 col-lg-4">
+                      <div class="col-12 col-lg-3">
                           <h3 class="mb-0">${{prof[3]}}</h3>
                           <small>Money spent</small>
+                      </div>
+                      <div class="col-12 col-lg-3">
+                        {% for cup in cupons %}
+                          <h3 class="mb-0">{{cup[0]}}/${{cup[2]}}</h3>
+                        {% endfor %}
+                          <small>Cupon id/value</small>
+
                       </div>
                       <!--/col-->
                   </div>
@@ -58,4 +65,5 @@
           </div>
 </div>
 </div>
+
 {% endblock %}
