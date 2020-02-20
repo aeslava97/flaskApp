@@ -220,7 +220,7 @@ def show_home():
                 sqlActualizacionWallet = "UPDATE User SET Wallet = %s WHERE "+ "name = %s "
                 valoresActualizacionUsuario = (str(saldoNuevoTotal),str(dataUsuarioActual[0][0]))
                 cursor.execute(sqlActualizacionWallet, valoresActualizacionUsuario)
-                mensajeTransaccion='Fondos añadidos con exito !!!'
+                mensajeTransaccion='Your wallet has been updated !!!'
                 conn.commit()
                 conn.close() 
                 connectionPerfil = mysql.connect()
@@ -232,7 +232,7 @@ def show_home():
                 return render_template('home.html',profile = data, cupons = dataCupon, mensajePositivo=mensajeTransaccion)    
              #Desactivo cupon si no tiene fondos   
             if saldoDisponible==0:
-                mensajeTransaccion="Agotaste el saldo de su cupon a partir de ahora no se encuentra activo"
+                mensajeTransaccion="There is no more money in your cupon"
                 sqlDesactivoCupon = "UPDATE CuponValido SET activo = %s WHERE idCupon = %s "
                 valoresDeCupoAdesactivar=(0,int(idCuponNuevo))
                 cursor.execute(sqlDesactivoCupon, valoresDeCupoAdesactivar)
@@ -246,7 +246,7 @@ def show_home():
                 cursor.close() 
                 return render_template('home.html',profile = data, cupons = dataCupon, mensaje=mensajeTransaccion)
             else :
-                mensajeTransaccion="saldo slocitado es mayor al disponible"
+                mensajeTransaccion="You do not have enough funds"
                 connectionPerfil = mysql.connect()
                 connection = mysql.connect()
                 cursor = connection.cursor()
@@ -275,8 +275,9 @@ def buying(id):
     userData  = getUser(cursor,user)[0]
     wallet = userData[1]
     value = productData[2]
+    wasted = userData[3]
     if wallet >= value:
-        BuyProducts(cursor, user, id, wallet, value)
+        BuyProducts(cursor, user, id, wallet, value, wasted)
         conn.commit()
         cursor.close()
         return ('', 204)

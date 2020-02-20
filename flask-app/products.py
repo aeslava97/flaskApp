@@ -4,11 +4,11 @@ def Products(cursor):
 	data = cursor.fetchall()
 	return data
 
-def BuyProducts(cursor, idUser, idProduct, wallet, value):
+def BuyProducts(cursor, idUser, idProduct, wallet, value, wasted):
 	sql = "INSERT INTO Transaction(idUser, idProduct, date) VALUES(%s, %s, %s)"
 	val = (idUser,idProduct,datetime.datetime.today().strftime('%Y-%m-%d'))
 	sql1 = "UPDATE User SET Wallet = %s, WASTED = %s WHERE NAME = %s"
-	val1 = (wallet-value,value,idUser)
+	val1 = (wallet-value,value + wasted,idUser)
 	cursor.execute(sql, val)
 	cursor.execute(sql1, val1)
 
