@@ -8,7 +8,7 @@ from random import randint
 from products import Products, BuyProducts, getProduct
 from users import getUser
 from users import getCupon
-from history import getHistory
+from history import getHistory, getFirstHistory
 from flask.templating import render_template
 import sys
 
@@ -58,17 +58,23 @@ def logins():
                             "Description  VARCHAR(100),"
                             "img    VARCHAR(100))")
         cursor.execute("CREATE TABLE IF NOT EXISTS Transaction ("
+                            "id INT NOT NULL AUTO_INCREMENT,"
+                            "PRIMARY KEY(id),"
                             "idUser VARCHAR(100) NOT NULL ,"
                             "FOREIGN KEY (idUser) REFERENCES User(name),"
                             "idProduct INT NOT NULL ,"
                             "FOREIGN KEY (idProduct) REFERENCES Product(id),"
                             "date  DATETIME)")
-        cursor.execute("CREATE TABLE IF NOT EXISTS Cupon ("
-                            "idCupon INT NOT NULL AUTO_INCREMENT,"
+        cursor.execute("CREATE TABLE IF NOT EXISTS CuponExtra ("
+                            "idCupon INT NOT NULL ,"
                             "PRIMARY KEY(idCupon),"
                             "idUser    VARCHAR(100) NOT NULL,"
                             "FOREIGN KEY (idUser) REFERENCES User(name),"
-                            "valueMoney    FLOAT)")
+                            "valueMoney     VARCHAR(100) NOT NULL)")
+        cursor.execute("CREATE TABLE IF NOT EXISTS CuponValido ("
+                            "idCupon INT NOT NULL ,"
+                            "PRIMARY KEY(idCupon),"
+                            "activo  INT NOT NULL)")
         # cont = 6
         # while cont != 0:
         #     sql4 = "INSERT INTO Product(id, name, value, Description , img) VALUES (%s, %s, %s, %s, %s)"
@@ -109,6 +115,8 @@ def logins():
                             "Description  VARCHAR(100),"
                             "img    VARCHAR(100))")
         cursor.execute("CREATE TABLE IF NOT EXISTS Transaction ("
+                            "id INT NOT NULL AUTO_INCREMENT,"
+                            "PRIMARY KEY(id),"
                             "idUser VARCHAR(100) NOT NULL ,"
                             "FOREIGN KEY (idUser) REFERENCES User(name),"
                             "idProduct INT NOT NULL ,"
@@ -163,6 +171,7 @@ def logins():
 def show_home():
     conn = mysql.connect()
     cursor = conn.cursor()
+    flash("Gracias!!")
     data = getUser(cursor,request.cookies['user'])
     data1 = getCupon(cursor,request.cookies['user'])
     details = request.form  
@@ -184,76 +193,81 @@ def show_home():
         print(outputnuevo+"+++++++++++++", file=sys.stderr)
        #Si es 1 el cupon es valido si es 0 no es valido
         if(int(str(outputnuevo))==1):
-            
             conn = mysql.connect()
             cursor = conn.cursor()
-            
-            sql= "SELECT  valueMoney FROM  CuponExtra WHERE idCupon = %s "
+            sql= "SELECT  valueMoney FROM  CuponExtra WHERE idCupon = %s and idUser = %s"
             valoresCupon=(int(idCuponNuevo))
-            cursor.execute(sql,valoresCupon)
+            usi = request.cookies['user']
+            arri = [valoresCupon, usi]
+            cursor.execute(sql, arri )
             data = cursor.fetchone()
+            print("????????"+request.cookies['user'], file=sys.stderr)
+            if  data:
             
-            #Dinero bono
-            saldoDisponible= int(str(data[0]))
-            #Modifico el saldo de acuerdo a la  cantidad solicitada
-            if(int(saldoSolicitado)<=saldoDisponible):
-                
-                #Actualizo el nuevo saldo del cupon disponible en en la base de datos
-                saldoNuevo=saldoDisponible-int(saldoSolicitado)
-                sqlActualizacionSaldo = "UPDATE CuponExtra SET valueMoney = %s WHERE idCupon = %s "
-                valoresActualizacion = (saldoNuevo, int(idCuponNuevo))
-                cursor.execute(sqlActualizacionSaldo, valoresActualizacion)
-                
-                #Actualizo saldo usuario agrego dinero a su wallet
-                dataUsuarioActual = getUser(cursor,request.cookies['user'])
-                
-                #Busco el wallet del usuario actual
-                sqlWalletActual= "SELECT  Wallet FROM  User WHERE +" "name= %s "
-                usuarioActual = (str(dataUsuarioActual[0][0]))
-                cursor.execute(sqlWalletActual,usuarioActual)
-                dataWalletActual = cursor.fetchone()
-                
-                #Nuevo saldo Wallet total
-                saldoNuevoTotal= (dataWalletActual[0])+ float(saldoSolicitado)
-        
-                #Actualizo perfil de usuario
-                sqlActualizacionWallet = "UPDATE User SET Wallet = %s WHERE "+ "name = %s "
-                valoresActualizacionUsuario = (str(saldoNuevoTotal),str(dataUsuarioActual[0][0]))
-                cursor.execute(sqlActualizacionWallet, valoresActualizacionUsuario)
-                mensajeTransaccion='Your wallet has been updated !!!'
-                conn.commit()
-                conn.close() 
-                connectionPerfil = mysql.connect()
-                connection = mysql.connect()
-                cursor = connection.cursor()
-                data = getUser(cursor,request.cookies['user'])
-                dataCupon = getCupon(cursor,request.cookies['user'])
-                cursor.close() 
-                return render_template('home.html',profile = data, cupons = dataCupon, mensajePositivo=mensajeTransaccion)    
-             #Desactivo cupon si no tiene fondos   
-            if saldoDisponible==0:
-                mensajeTransaccion="There is no more money in your cupon"
-                sqlDesactivoCupon = "UPDATE CuponValido SET activo = %s WHERE idCupon = %s "
-                valoresDeCupoAdesactivar=(0,int(idCuponNuevo))
-                cursor.execute(sqlDesactivoCupon, valoresDeCupoAdesactivar)
-                conn.commit()
-                conn.close()
-                connectionPerfil = mysql.connect()
-                connection = mysql.connect()
-                cursor = connection.cursor()
-                data = getUser(cursor,request.cookies['user'])
-                dataCupon = getCupon(cursor,request.cookies['user'])
-                cursor.close() 
-                return render_template('home.html',profile = data, cupons = dataCupon, mensaje=mensajeTransaccion)
-            else :
-                mensajeTransaccion="You do not have enough funds"
-                connectionPerfil = mysql.connect()
-                connection = mysql.connect()
-                cursor = connection.cursor()
-                data = getUser(cursor,request.cookies['user'])
-                dataCupon = getCupon(cursor,request.cookies['user'])
-                cursor.close() 
-                return render_template('home.html',profile = data, cupons = dataCupon, mensaje=mensajeTransaccion)
+                #Dinero bono
+                saldoDisponible= int(str(data[0]))
+                #Modifico el saldo de acuerdo a la  cantidad solicitada
+                if(int(saldoSolicitado)<=saldoDisponible):
+                    
+                    #Actualizo el nuevo saldo del cupon disponible en en la base de datos
+
+                    saldoNuevo=saldoDisponible-int(saldoSolicitado)
+                    sqlActualizacionSaldo = "UPDATE CuponExtra SET valueMoney = %s WHERE idCupon = %s "
+                    valoresActualizacion = (saldoNuevo, int(idCuponNuevo))
+                    cursor.execute(sqlActualizacionSaldo, valoresActualizacion)
+                    
+                    #Actualizo saldo usuario agrego dinero a su wallet
+                    dataUsuarioActual = getUser(cursor,request.cookies['user'])
+                    
+                    #Busco el wallet del usuario actual
+                    sqlWalletActual= "SELECT  Wallet FROM  User WHERE +" "name= %s "
+                    usuarioActual = (str(dataUsuarioActual[0][0]))
+                    cursor.execute(sqlWalletActual,usuarioActual)
+                    dataWalletActual = cursor.fetchone()
+                    
+                    #Nuevo saldo Wallet total
+                    saldoNuevoTotal= (dataWalletActual[0])+ float(saldoSolicitado)
+            
+                    #Actualizo perfil de usuario
+                    sqlActualizacionWallet = "UPDATE User SET Wallet = %s WHERE "+ "name = %s "
+                    valoresActualizacionUsuario = (str(saldoNuevoTotal),str(dataUsuarioActual[0][0]))
+                    cursor.execute(sqlActualizacionWallet, valoresActualizacionUsuario)
+                    mensajeTransaccion='Your wallet has been updated !!!'
+                    conn.commit()
+                    conn.close() 
+                    connectionPerfil = mysql.connect()
+                    connection = mysql.connect()
+                    cursor = connection.cursor()
+                    data = getUser(cursor,request.cookies['user'])
+                    dataCupon = getCupon(cursor,request.cookies['user'])
+                    cursor.close() 
+                    return render_template('home.html',profile = data, cupons = dataCupon, mensajePositivo=mensajeTransaccion)    
+                 #Desactivo cupon si no tiene fondos   
+                if saldoDisponible==0:
+                    mensajeTransaccion="There is no more money in your cupon"
+                    sqlDesactivoCupon = "UPDATE CuponValido SET activo = %s WHERE idCupon = %s "
+                    valoresDeCupoAdesactivar=(0,int(idCuponNuevo))
+                    cursor.execute(sqlDesactivoCupon, valoresDeCupoAdesactivar)
+                    conn.commit()
+                    conn.close()
+                    connectionPerfil = mysql.connect()
+                    connection = mysql.connect()
+                    cursor = connection.cursor()
+                    data = getUser(cursor,request.cookies['user'])
+                    dataCupon = getCupon(cursor,request.cookies['user'])
+                    cursor.close() 
+                    return render_template('home.html',profile = data, cupons = dataCupon, mensaje=mensajeTransaccion)
+                else :
+                    mensajeTransaccion="You do not have enough funds"
+                    connectionPerfil = mysql.connect()
+                    connection = mysql.connect()
+                    cursor = connection.cursor()
+                    data = getUser(cursor,request.cookies['user'])
+                    dataCupon = getCupon(cursor,request.cookies['user'])
+                    cursor.close() 
+                    return render_template('home.html',profile = data, cupons = dataCupon, mensaje=mensajeTransaccion)
+            else:
+                return render_template('error409.html')
 
     cursor.close()
     return render_template('home.html',profile = data, cupons = data1)
@@ -278,9 +292,10 @@ def buying(id):
     wasted = userData[3]
     if wallet >= value:
         BuyProducts(cursor, user, id, wallet, value, wasted)
+        dataHistory = getFirstHistory(cursor, user)
         conn.commit()
         cursor.close()
-        return ('', 204)
+        return render_template('succes.html', transactionNumber = dataHistory)
     abort(409)
 
 @app.route('/history' , methods=['GET'])

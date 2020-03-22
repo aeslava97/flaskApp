@@ -1,0 +1,14 @@
+{% extends 'index.html' %}
+<!-- Navbar -->
+{%include 'includes/navbar.html'%}
+
+{% block body %}
+
+<div>
+    <h1 class= "text-center titulo"><strong>You just bought your product!</strong> </h1>
+    {% for trans in transactionNumber %}
+    <h3 class= "text-center titulo">The transaction number is: {{trans[0]}} </h3>
+    {% endfor %} 
+</div>
+
+{% endblock %}

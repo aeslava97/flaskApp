@@ -18,7 +18,6 @@
   
   <thead id="tablita">
     <tr>
-      <th scope="col">#</th>
       <th scope="col">Name</th>
       <th scope="col">ProductId</th>
       <th scope="col">DateTime</th>
@@ -27,10 +26,9 @@
   <tbody>
     {% for histo in histories %}
     <tr>
-      <th scope="row">{{loop.index}}</th>
-      <td>{{histo[0]}}</td>
       <td>{{histo[1]}}</td>
-      <td>@{{histo[2]}}</td>
+      <td>{{histo[2]}}</td>
+      <td>@{{histo[3]}}</td>
     </tr>
     {% endfor %} 
   </tbody>
