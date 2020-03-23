@@ -32,9 +32,6 @@ app.config['MYSQL_DATABASE_SOCKET'] = None
 mysql = MySQL()
 mysql.init_app(app)
 usuarioActual = "hola"
-print("------------usuarioActual-------------")
-print(usuarioActual)
-print("------------usuarioActual-------------")
 @app.route('/', methods=['GET', 'POST','PUT'])
 def logins():        
     if request.method == "POST" and ("user" in request.form.keys()) and ("password" in request.form.keys()):
@@ -66,7 +63,7 @@ def logins():
                             "FOREIGN KEY (idProduct) REFERENCES Product(id),"
                             "date  DATETIME)")
         cursor.execute("CREATE TABLE IF NOT EXISTS CuponExtra ("
-                            "idCupon INT NOT NULL ,"
+                            "idCupon INT NOT NULL AUTO_INCREMENT,"
                             "PRIMARY KEY(idCupon),"
                             "idUser    VARCHAR(100) NOT NULL,"
                             "FOREIGN KEY (idUser) REFERENCES User(name),"
@@ -123,7 +120,7 @@ def logins():
                             "FOREIGN KEY (idProduct) REFERENCES Product(id),"
                             "date  DATETIME)")
         cursor.execute("CREATE TABLE IF NOT EXISTS CuponExtra ("
-                            "idCupon INT NOT NULL ,"
+                            "idCupon INT NOT NULL AUTO_INCREMENT,"
                             "PRIMARY KEY(idCupon),"
                             "idUser    VARCHAR(100) NOT NULL,"
                             "FOREIGN KEY (idUser) REFERENCES User(name),"
@@ -148,13 +145,12 @@ def logins():
             sql = "INSERT INTO User(name, Wallet, password, wasted) VALUES (%s, %s, %s, %s)"
             val = (user1, 0, password1, 0)
             cursor.execute(sql, val)
-            idRand = randint(1, 1000)
-            sql3 = "INSERT INTO CuponExtra(idCupon, idUser, valueMoney)VALUES (%s, %s, %s)"
-            val3 = (str(idRand), user1, 100)
-            
+            sql3 = "INSERT INTO CuponExtra(idUser, valueMoney)VALUES (%s, %s)"
+            val3 = (user1, 100)
             cursor.execute(sql3, val3)
+            valorCursor = cursor.lastrowid
             sql4 = "INSERT INTO CuponValido(idCupon,activo)VALUES (%s,%s)"
-            val4 = (str(idRand),1)
+            val4 = (valorCursor,1)
             cursor.execute(sql4, val4)
             
             conn.commit()
