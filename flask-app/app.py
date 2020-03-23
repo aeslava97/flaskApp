@@ -315,6 +315,12 @@ def hello(name):
     return make_response(template.render(name=name,js_url=js_url))     
 
 
+@app.route('/receiveCupon', methods=['POST'])
+def add_message():
+    content = request.json
+    print (content)
+    return ("",204)
+
 @app.errorhandler(409)
 def payme(e):
     return render_template('error409.html')
