@@ -321,6 +321,7 @@ def add_message():
     print (content)
     return ("",204)
 
+# AQUI RECIBE EL JSON! 
 @app.errorhandler(409)
 def payme(e):
     return render_template('error409.html')
