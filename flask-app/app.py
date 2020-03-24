@@ -7,7 +7,7 @@ from http import cookies
 from random import randint
 from products import Products, BuyProducts, getProduct
 from users import getUser
-from users import getCupon
+from users import getCupon, validateUser
 from history import getHistory, getFirstHistory
 from flask.templating import render_template
 import sys
@@ -314,8 +314,24 @@ def hello(name):
 @app.route('/receiveCupon', methods=['POST'])
 def add_message():
     content = request.json
-    print (content)
-    return ("",204)
+    with open("validacion.txt","w+") as file:
+        file.write(str(content))
+    conn = mysql.connect()
+    cursor = conn.cursor()
+    data = validateUser(cursor, content['password'], content['idUser'])
+    if data:
+        sql1 = "INSERT INTO CuponExtra (idUser, valueMoney) VALUES (%s, %s)"
+        val1 = (content['idUser'],content['valueMoney'])
+        cursor.execute(sql1, val1)
+        sql2 = "INSERT INTO CuponValido (idCupon, activo) VALUES (%s, 1)"
+        val2 = cursor.lastrowid
+        cursor.execute(sql2, val2)
+        conn.commit()
+        cursor.close()
+        return ("",204)
+    else:
+        cursor.close()
+        return ("", 400)
 
 # AQUI RECIBE EL JSON! 
 @app.errorhandler(409)

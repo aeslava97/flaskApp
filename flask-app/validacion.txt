@@ -1,0 +1,1 @@
+{'password': '1', 'valueMoney': '5000', 'idUser': '1'}

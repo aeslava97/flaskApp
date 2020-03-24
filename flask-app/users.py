@@ -11,3 +11,10 @@ def getCupon(cursor, idUser):
 	cursor.execute(sql, val)
 	data = cursor.fetchall()
 	return data
+
+def validateUser(cursor, idUser, passw):
+	sql = "SELECT * FROM User WHERE name = %s AND password = %s"
+	val = (idUser, passw)
+	cursor.execute(sql, val)
+	data = cursor.fetchall()
+	return len(data) != 0
