@@ -21,6 +21,7 @@
       </div>
       <div class="card-footer">
         <form action="products/buying/{{product[0]}}" method="POST">
+          {{ form.csrf_token }}
           <input type="submit"  class="btn btn-danger" value="Buy!"></input>
         </form>
       </div>

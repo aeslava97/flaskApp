@@ -11,10 +11,13 @@ from users import getCupon, validateUser
 from history import getHistory, getFirstHistory
 from flask.templating import render_template
 import sys
-
+from flask_wtf.csrf import CSRFProtect
+from flask_wtf import Form
+import forms
 
 app = Flask(__name__)
 app.secret_key = "super secret key"
+csrf = CSRFProtect(app)
 loader = FileSystemLoader( searchpath="templates/" )
 env = Environment(loader=loader)
 
@@ -33,7 +36,8 @@ mysql = MySQL()
 mysql.init_app(app)
 usuarioActual = "hola"
 @app.route('/', methods=['GET', 'POST','PUT'])
-def logins():        
+def logins():
+    form = forms.EmailPasswordForm()        
     if request.method == "POST" and ("user" in request.form.keys()) and ("password" in request.form.keys()):
         details = request.form
         user = details['user']
@@ -161,7 +165,7 @@ def logins():
             
     # return "login and register"
     template = env.get_template('logins.html')
-    return make_response(template.render())
+    return make_response(template.render(form = form))
 
 @app.route('/home' , methods=['GET', 'POST'])
 def show_home():
@@ -237,7 +241,7 @@ def show_home():
                     data = getUser(cursor,request.cookies['user'])
                     dataCupon = getCupon(cursor,request.cookies['user'])
                     cursor.close() 
-                    return render_template('home.html',profile = data, cupons = dataCupon, mensajePositivo=mensajeTransaccion)    
+                    return render_template('home.html',profile = data, cupons = dataCupon, mensajePositivo=mensajeTransaccion,form = Form())    
                  #Desactivo cupon si no tiene fondos   
                 if saldoDisponible==0:
                     mensajeTransaccion="There is no more money in your cupon"
@@ -252,7 +256,7 @@ def show_home():
                     data = getUser(cursor,request.cookies['user'])
                     dataCupon = getCupon(cursor,request.cookies['user'])
                     cursor.close() 
-                    return render_template('home.html',profile = data, cupons = dataCupon, mensaje=mensajeTransaccion)
+                    return render_template('home.html',profile = data, cupons = dataCupon, mensaje=mensajeTransaccion,form = Form())
                 else :
                     mensajeTransaccion="You do not have enough funds"
                     connectionPerfil = mysql.connect()
@@ -261,12 +265,12 @@ def show_home():
                     data = getUser(cursor,request.cookies['user'])
                     dataCupon = getCupon(cursor,request.cookies['user'])
                     cursor.close() 
-                    return render_template('home.html',profile = data, cupons = dataCupon, mensaje=mensajeTransaccion)
+                    return render_template('home.html',profile = data, cupons = dataCupon, mensaje=mensajeTransaccion,form = Form())
             else:
                 return render_template('error409.html')
 
     cursor.close()
-    return render_template('home.html',profile = data, cupons = data1)
+    return render_template('home.html',profile = data, cupons = data1, form = Form())
 
 @app.route('/products' , methods=['GET', 'POST'])
 def products():
@@ -274,7 +278,7 @@ def products():
     cursor = conn.cursor()
     data = Products(cursor)
     cursor.close()
-    return render_template('products.html',products = data)
+    return render_template('products.html',products = data, form = Form())
 
 @app.route('/products/buying/<id>', methods=['POST'])
 def buying(id):

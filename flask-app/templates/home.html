@@ -14,7 +14,8 @@
      
       
     
-     <form  method="POST" >    
+     <form  method="POST" >
+      {{ form.csrf_token }}
 <div class="form-group">
   <label for="exampleInputEmail1">Cupon</label>
   <input type="text" class="form-control" placeholder="Enter valid cupon" name ="cupon">
